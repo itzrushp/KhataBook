@@ -40,9 +40,10 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             position: fixed;
             border-radius: 30px;
-            margin-top: 30px;
+            margin-top: 20px;
             z-index: 100;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid #6c63ff;
         }
 
         nav.scrolled {
@@ -132,7 +133,8 @@
             gap: 20px;
             width: 40%;
         }
-        #listing p{
+
+        #listing p {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: 1.2em;
             color: #333;
@@ -156,45 +158,40 @@
             box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .hisab #fontpart {
+        .hisab .fontpart {
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
+            /* Add cursor pointer to indicate clickability */
         }
 
-        .hisab #fontpart h3 {
+        .hisab .fontpart h3 {
             font-size: 1.2em;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #333;
         }
 
-        .hisab #fontpart i {
+        .hisab .fontpart i {
             font-size: 1.5em;
             color: #6c63ff;
         }
 
-        .hisab #endpart {
+        .hisab .endpart {
             display: flex;
             gap: 15px;
         }
 
-        .hisab #endpart i {
+        .hisab .endpart i {
             font-size: 1.5em;
             color: #6c63ff;
             cursor: pointer;
         }
 
-        .hisab #endpart i:hover {
+        .hisab .endpart i:hover {
             color: #4a44c2;
         }
 
-        .hisab #listing {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
 
         footer {
             text-align: center;
@@ -264,7 +261,6 @@
             background-color: #4d4d4d;
             color: white;
         }
-        
     </style>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
     <title>Main</title>
@@ -296,27 +292,29 @@
             </div>
             <div id="listing">
                 <% if (hisabFiles.length> 0) { %>
-                    <%hisabFiles.forEach(file=> { %>
+                    <% hisabFiles.forEach(file=> { %>
                         <div class="hisab">
-                            <div id="fontpart">
+                            <div class="fontpart"> <!-- Use class instead of id -->
                                 <h3>
-                                    <%= file.replace('.txt', '' ) %>
-                                </h3> <!-- Display the date (filename without extension) -->
+                                    <%= file.replace('.txt', '' ) %> <!-- Display filename without extension -->
+                                </h3>
                                 <i class="ri-arrow-right-circle-fill"></i>
                             </div>
-                            <div id="endpart">
+                            <div class="endpart">
                                 <i class="ri-quill-pen-line" title="Edit"></i>
                                 <i class="ri-delete-bin-line" title="Delete" data-file="<%= file %>"></i>
                             </div>
                         </div>
                         <% }); %>
                             <% } else { %>
-                               <center><p>No hisab records found.</p></center> 
+                                <center>
+                                    <p>No hisab records found.</p>
+                                </center>
                                 <% } %>
             </div>
         </div>
 
-
+        <!-- Confirmation Modal for Deletion -->
         <div id="delete-overlay">
             <div class="delete-confirmation">
                 <h2>Are you sure you want to delete?</h2>
@@ -326,6 +324,7 @@
                 </div>
             </div>
         </div>
+
         <footer>
             <p>&copy; 2024 Khatabook. All rights reserved.</p>
         </footer>
@@ -361,33 +360,45 @@
 
             // Yes button click handler
             yesButton.addEventListener('click', function () {
-                // Logic for deletion
-                const page = document.getElementById('major');
-                // page.innerHTML = ''; // Clear the page
-
+                // Logic for deletion (you can add actual deletion logic here)
                 // Hide the overlay
-                // deleteOverlay.style.display = 'none';
+                deleteOverlay.style.display = 'none';
             });
 
             // No button click handler
             noButton.addEventListener('click', function () {
                 // Simply hide the overlay
                 deleteOverlay.style.display = 'none';
-            }); const delete_button = document.getElementsByClassName('ri-delete-bin-line');
-            delete_button.addEventListener('click', function () {
-                const page = document.getElementById('major');
-                page.innerHTML = '';
-            })
+            });
 
-            const quill = document.getElementsByClassName("ri-quill-pen-line");
-            quill.addEventListener('onclick', function () {
-                 window.location = '/edit'
-            })
-            const front = document.getElementById('frontpart');
-            front.addEventListener('onclick', function () {
-                 window.location = '/read'
-            })
+            document.addEventListener('DOMContentLoaded', () => {
+                const listingDiv = document.getElementById('listing');
+
+                if (!listingDiv) {
+                    console.error('No #listing element found');
+                    return;
+                }
+
+                listingDiv.addEventListener('click', (event) => {
+                    // Log the target element for debugging
+                    console.log('Clicked element:', event.target);
+
+                    // Handle click on the quill (edit) icon
+                    if (event.target.classList.contains('ri-quill-pen-line')) {
+                        console.log('Quill (edit) clicked');
+                        window.location.href = '/edit';
+                    }
+
+                    // Handle click on the fontpart (item) div
+                    else if (event.target.closest('.fontpart')) {
+                        console.log('Fontpart clicked');
+                        window.location.href = '/read';
+                    }
+                });
+            });
         </script>
+    </div>
 </body>
+
 
 </html>
