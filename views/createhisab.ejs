@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <title>Create New Hisab - Khatabook</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        #major {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            background-image: url(https://plus.unsplash.com/premium_photo-1681437744977-6b91a6ffde95?q=80&w=1798&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
+            background-position: center;
+            background-size: cover;
+            padding-top: 120px;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+            width: 80%;
+            padding-left: 40px;
+            padding-right: 40px;
+            background-color: rgba(255, 255, 255, 0.9);
+            position: fixed;
+            border-radius: 30px;
+            border: 2px solid #6c63ff;
+            top: 20px;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        nav #logo h1 {
+            color: #6c63ff;
+            font-weight: bold;
+        }
+
+        nav .links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .links a {
+            text-decoration: none;
+            margin-right: 50px;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .links a:hover {
+            color: #6c63ff;
+        }
+
+        #input-box {
+            width: 500px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            border: 2px solid #6c63ff;
+        }
+
+        #input-box h2 {
+            text-align: center;
+            color: #6c63ff;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            color: #6c63ff;
+            font-weight: 600;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #6c63ff;
+        }
+
+        #create-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #6c63ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #create-btn:hover {
+            background-color: #5a52d5;
+        }
+
+        .additional-info {
+            text-align: center;
+            color: #888;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="major">
+        <nav>
+            <div id="logo">
+                <h1>Khatabook</h1>
+            </div>
+            <div class="links">
+                <a href="/">Home</a>
+                <a href="/create">Create New Hisab</a>
+                <a href="/#hisablist">Hisab List</a>
+            </div>
+        </nav>
+
+        <div id="input-box">
+            <h2>Create New Hisab</h2>
+            <form action="/create" method="POST">
+                <div class="input-group">
+                    <label for="items">Creating New Hisab As:</label>
+                    <textarea 
+                        name="items" 
+                        id="items" 
+                        placeholder="Enter items like: atta, chai, cheeni khareeda" 
+                        rows="10"
+                    ></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="date">Date</label>
+                    <input 
+                        type="date" 
+                        name="date" 
+                        id="date"
+                    >
+                </div>
+                <button id="create-btn" type="submit">Create Hisab</button>
+            </form>
+            
+            <p class="additional-info">
+                <i class="ri-information-line"></i> 
+                Add details of your expenses carefully
+            </p>
+        </div>
+    </div>
+</body>
+</html>

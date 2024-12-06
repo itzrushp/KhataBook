@@ -1,0 +1,178 @@
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const bodyParser = require('body-parser');
+
+const app = express();
+const PORT = 3000;
+
+// Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public'));
+app.set('view engine', 'ejs');
+
+// Directory to store hisab files
+const HISAB_DIR = path.join(__dirname, 'hisabs');
+
+// Ensure hisabs directory exists
+if (!fs.existsSync(HISAB_DIR)) {
+    fs.mkdirSync(HISAB_DIR);
+}
+
+// Routes
+
+// Home route
+app.get('/', (req, res) => {
+    fs.readdir(HISAB_DIR, (err, files) => {
+        if (err) {
+            return res.status(500).send('Failed to load hisab files');
+        }
+        const hisabs = files.map(file => ({ date: path.basename(file, '.txt') }));
+        res.render('index', { hisabs });
+    });
+});
+
+// Create a new hisab
+app.post('/create', (req, res) => {
+    const { date, items } = req.body;
+
+    if (!date || !items) {
+        return res.status(400).send('Date and items are required');
+    }
+
+    const filePath = path.join(HISAB_DIR, `${date}.txt`);
+
+    fs.writeFile(filePath, items, (err) => {
+        if (err) {
+            return res.status(500).send('Failed to create hisab');
+        }
+        res.redirect('/');
+    });
+});
+
+// Read a hisab
+app.get('/read/:date', (req, res) => {
+    const { date } = req.params;
+    const filePath = path.join(HISAB_DIR, `${date}.txt`);
+
+    fs.readFile(filePath, 'utf-8', (err, data) => {
+        if (err) {
+            return res.status(404).send('Hisab not found');
+        }
+        res.render('readinghisab', { date, data });
+    });
+});
+
+// Edit a hisab
+app.get('/edit/:date', (req, res) => {
+    const { date } = req.params;
+    const filePath = path.join(HISAB_DIR, `${date}.txt`);
+
+    fs.readFile(filePath, 'utf-8', (err, data) => {
+        if (err) {
+            return res.status(404).send('Hisab not found');
+        }
+        res.render('edithisab', { date, data });
+    });
+});
+
+app.post('/edit/:date', (req, res) => {
+    const { date } = req.params;
+    const { items } = req.body;
+    const filePath = path.join(HISAB_DIR, `${date}.txt`);
+
+    fs.writeFile(filePath, items, (err) => {
+        if (err) {
+            return res.status(500).send('Failed to update hisab');
+        }
+        res.redirect('/');
+    });
+});
+
+// Delete a hisab
+app.post('/delete/:date', (req, res) => {
+    const { date } = req.params;
+    const filePath = path.join(HISAB_DIR, `${date}.txt`);
+
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            return res.status(500).send('Failed to delete hisab');
+        }
+        res.redirect('/');
+    });
+});
+
+// Start server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+
+<!-- index.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hisab Manager</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Hisab Manager</h1>
+    <form action="/create" method="post">
+        <input type="date" name="date" required>
+        <textarea name="items" placeholder="Enter items here..." required></textarea>
+        <button type="submit">Create Hisab</button>
+    </form>
+
+    <h2>Existing Hisabs</h2>
+    <ul>
+        <% hisabs.forEach(hisab => { %>
+            <li>
+                <a href="/read/<%= hisab.date %>"><%= hisab.date %></a>
+                <form action="/edit/<%= hisab.date %>" method="get" style="display:inline;">
+                    <button type="submit">Edit</button>
+                </form>
+                <form action="/delete/<%= hisab.date %>" method="post" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        <% }); %>
+    </ul>
+</body>
+</html>
+
+<!-- readinghisab.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read Hisab</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Hisab for <%= date %></h1>
+    <pre><%= data %></pre>
+    <a href="/">Back to Home</a>
+</body>
+</html>
+
+<!-- edithisab.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Hisab</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Edit Hisab for <%= date %></h1>
+    <form action="/edit/<%= date %>" method="post">
+        <textarea name="items" required><%= data %></textarea>
+        <button type="submit">Save Changes</button>
+    </form>
+    <a href="/">Cancel</a>
+</body>
+</html>
